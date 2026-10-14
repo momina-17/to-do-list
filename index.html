@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskFlow — a modern productivity dashboard to plan, track and complete your tasks.">
+  <title>TaskFlow | To-Do Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <!-- ===== Skip link for keyboard users ===== -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- ===== Main application wrapper ===== -->
+  <div class="app" id="app">
+
+    <!-- ===== Sidebar navigation ===== -->
+    <aside class="sidebar" id="sidebar" aria-label="Sidebar">
+      <div class="sidebar__brand">
+        <span class="logo" aria-hidden="true">✓</span>
+        <span class="sidebar__brand-name">TaskFlow</span>
+      </div>
+
+      <nav class="sidebar__nav" aria-label="Task views">
+        <ul class="nav-list">
+          <li><a href="#dashboard" class="nav-link is-active" data-view="dashboard" aria-current="page">Dashboard</a></li>
+          <li><a href="#all" class="nav-link" data-view="all">All Tasks</a></li>
+          <li><a href="#today" class="nav-link" data-view="today">Today</a></li>
+          <li><a href="#upcoming" class="nav-link" data-view="upcoming">Upcoming</a></li>
+          <li><a href="#completed" class="nav-link" data-view="completed">Completed</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- ===== Main content area ===== -->
+    <div class="content">
+
+      <!-- ===== Header ===== -->
+      <header class="header">
+        <!-- Mobile sidebar toggle -->
+        <button type="button" class="btn btn--icon sidebar-toggle" id="sidebar-toggle"
+                aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
+          ☰
+        </button>
+
+        <div class="header__title">
+          <span class="logo" aria-hidden="true">✓</span>
+          <h1 class="app-name">TaskFlow</h1>
+          <!-- Filled in by JavaScript -->
+          <p class="header__date"><time id="current-date" datetime="">Today</time></p>
+        </div>
+
+        <!-- Search -->
+        <form class="search" id="search-form" role="search">
+          <label for="search-input" class="visually-hidden">Search tasks</label>
+          <input type="search" id="search-input" name="search" placeholder="Search tasks…" autocomplete="off">
+        </form>
+
+        <div class="header__actions">
+          <button type="button" class="btn btn--icon" id="theme-toggle"
+                  aria-label="Switch to dark mode" aria-pressed="false">
+            🌙
+          </button>
+          <button type="button" class="btn btn--primary" id="add-task-btn"
+                  aria-controls="task-form-section" aria-expanded="false">
+            + Add Task
+          </button>
+        </div>
+      </header>
+
+      <main class="main" id="main-content">
+
+        <!-- ===== Dashboard statistics ===== -->
+        <section class="stats" id="dashboard" aria-labelledby="stats-heading">
+          <h2 id="stats-heading">Overview</h2>
+
+          <ul class="stats__grid">
+            <li class="stat-card stat-card--total">
+              <span class="stat-card__label">Total tasks</span>
+              <strong class="stat-card__value" id="stat-total">0</strong>
+            </li>
+            <li class="stat-card stat-card--completed">
+              <span class="stat-card__label">Completed</span>
+              <strong class="stat-card__value" id="stat-completed">0</strong>
+            </li>
+            <li class="stat-card stat-card--pending">
+              <span class="stat-card__label">Pending</span>
+              <strong class="stat-card__value" id="stat-pending">0</strong>
+            </li>
+            <li class="stat-card stat-card--overdue">
+              <span class="stat-card__label">Overdue</span>
+              <strong class="stat-card__value" id="stat-overdue">0</strong>
+            </li>
+          </ul>
+
+          <!-- Completion progress -->
+          <div class="progress">
+            <label for="progress-bar" class="progress__label">
+              Completion: <span id="progress-text">0%</span>
+            </label>
+            <progress id="progress-bar" class="progress__bar" max="100" value="0">0%</progress>
+          </div>
+        </section>
+
+        <!-- ===== Add / Edit task form (hidden until opened by JS) ===== -->
+        <section class="task-form-section" id="task-form-section" aria-labelledby="form-heading" hidden>
+          <h2 id="form-heading">Add Task</h2>
+
+          <form class="task-form" id="task-form" novalidate>
+            <!-- Holds the id of a task being edited; empty when adding -->
+            <input type="hidden" id="task-id" name="taskId" value="">
+
+            <div class="form-group">
+              <label for="task-title">Title <span aria-hidden="true">*</span></label>
+              <input type="text" id="task-title" name="title" required maxlength="120"
+                     aria-describedby="task-title-error" placeholder="What needs to be done?">
+              <p class="form-error" id="task-title-error" role="alert" hidden>Please enter a task title.</p>
+            </div>
+
+            <div class="form-group">
+              <label for="task-description">Description (optional)</label>
+              <textarea id="task-description" name="description" rows="3" maxlength="500"
+                        placeholder="Add more details…"></textarea>
+            </div>
+
+            <div class="form-row">
+              <fieldset class="form-group">
+                <legend>Priority</legend>
+                <div class="radio-group">
+                  <input type="radio" id="priority-high" name="priority" value="high">
+                  <label for="priority-high">High</label>
+                  <input type="radio" id="priority-medium" name="priority" value="medium" checked>
+                  <label for="priority-medium">Medium</label>
+                  <input type="radio" id="priority-low" name="priority" value="low">
+                  <label for="priority-low">Low</label>
+                </div>
+              </fieldset>
+
+              <div class="form-group">
+                <label for="task-category">Category</label>
+                <select id="task-category" name="category">
+                  <option value="study">Study</option>
+                  <option value="work">Work</option>
+                  <option value="personal" selected>Personal</option>
+                  <option value="shopping">Shopping</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="task-due">Due date</label>
+                <input type="date" id="task-due" name="dueDate">
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn--primary" id="save-task-btn">Save Task</button>
+              <button type="button" class="btn btn--secondary" id="cancel-task-btn">Cancel</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- ===== Tasks: filters, sorting and list ===== -->
+        <section class="tasks" id="tasks-section" aria-labelledby="tasks-heading">
+          <!-- Heading text changes with the active view (All, Today, Upcoming, Completed) -->
+          <h2 id="tasks-heading">All Tasks</h2>
+
+          <!-- Filters and sorting -->
+          <div class="toolbar">
+            <div class="filter-group" role="group" aria-label="Filter by status">
+              <button type="button" class="btn btn--filter is-active" data-filter="all" aria-pressed="true">All</button>
+              <button type="button" class="btn btn--filter" data-filter="active" aria-pressed="false">Active</button>
+              <button type="button" class="btn btn--filter" data-filter="completed" aria-pressed="false">Completed</button>
+              <button type="button" class="btn btn--filter" data-filter="overdue" aria-pressed="false">Overdue</button>
+            </div>
+
+            <div class="toolbar__selects">
+              <div class="form-group form-group--inline">
+                <label for="filter-category">Category</label>
+                <select id="filter-category" name="filterCategory">
+                  <option value="all">All categories</option>
+                  <option value="study">Study</option>
+                  <option value="work">Work</option>
+                  <option value="personal">Personal</option>
+                  <option value="shopping">Shopping</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group form-group--inline">
+                <label for="filter-priority">Priority</label>
+                <select id="filter-priority" name="filterPriority">
+                  <option value="all">All priorities</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+
+              <div class="form-group form-group--inline">
+                <label for="sort-select">Sort by</label>
+                <select id="sort-select" name="sort">
+                  <option value="due">Due Date</option>
+                  <option value="priority">Priority</option>
+                  <option value="recent">Recently Added</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live count announced to screen readers -->
+          <p class="tasks__count" id="tasks-count" aria-live="polite">0 tasks</p>
+
+          <!-- Task list: JavaScript renders items from the template below -->
+          <ul class="task-list" id="task-list" aria-labelledby="tasks-heading"></ul>
+
+          <!-- Empty state -->
+          <div class="empty-state" id="empty-state">
+            <p class="empty-state__icon" aria-hidden="true">📋</p>
+            <h3 class="empty-state__title">No tasks here yet</h3>
+            <p class="empty-state__text">Add your first task to start getting things done.</p>
+            <button type="button" class="btn btn--primary" id="empty-add-btn">+ Add Task</button>
+          </div>
+        </section>
+      </main>
+
+      <!-- ===== Footer ===== -->
+      <footer class="footer">
+        <p>&copy; <span id="footer-year">2026</span> TaskFlow. Stay focused, get things done.</p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ===== Task item template (cloned by JavaScript for each task) ===== -->
+  <template id="task-template">
+    <li class="task-item" data-id="">
+      <input type="checkbox" class="task-item__checkbox" aria-label="Mark task as complete">
+      <div class="task-item__body">
+        <h3 class="task-item__title"></h3>
+        <p class="task-item__description"></p>
+        <div class="task-item__meta">
+          <span class="badge task-item__priority"></span>
+          <span class="tag task-item__category"></span>
+          <time class="task-item__due" datetime=""></time>
+        </div>
+      </div>
+      <div class="task-item__actions">
+        <button type="button" class="btn btn--small task-item__edit" aria-label="Edit task">Edit</button>
+        <button type="button" class="btn btn--small btn--danger task-item__delete" aria-label="Delete task">Delete</button>
+      </div>
+    </li>
+  </template>
+
+  <!-- ===== Delete confirmation dialog ===== -->
+  <dialog class="dialog" id="delete-dialog" aria-labelledby="delete-dialog-title" aria-describedby="delete-dialog-text">
+    <form method="dialog" class="dialog__content">
+      <h2 id="delete-dialog-title">Delete task?</h2>
+      <p id="delete-dialog-text">This task will be permanently deleted. This action cannot be undone.</p>
+      <div class="dialog__actions">
+        <button type="submit" class="btn btn--secondary" id="cancel-delete-btn" value="cancel">Cancel</button>
+        <button type="submit" class="btn btn--danger" id="confirm-delete-btn" value="confirm">Delete</button>
+      </div>
+    </form>
+  </dialog>
+
+</body>
+</html>
