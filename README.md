@@ -26,14 +26,6 @@ A simple and responsive To-Do List web application built using **HTML, CSS, and 
 - Managing arrays and task data.
 - Saving and retrieving data using localStorage.
 
-## Future Improvements
-
-- Task priority levels.
-- Due dates and deadlines.
-- Search and filtering.
-- Dark and light mode.
-- Task categories and progress tracking.
-
 ## Author
 
 Created as a practice project to improve my front-end web development skills using HTML, CSS, and JavaScript.
